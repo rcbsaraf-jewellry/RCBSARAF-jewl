@@ -14,8 +14,8 @@ export const APP_PATH_PREFIXES = [
 ] as const;
 
 export const ROLE_ALLOWED_PREFIXES: Record<string, readonly string[]> = {
-  sales: ["/items", "/sales"],
-  store_manager: ["/items", "/sales", "/purchases", "/time", "/reports"],
+  sales: ["/items", "/sales", "/dashboard/attendance"],
+  store_manager: ["/items", "/sales", "/purchases", "/time", "/reports", "/dashboard/attendance"],
 };
 
 export function hasFullAppAccess(role: string | null | undefined) {

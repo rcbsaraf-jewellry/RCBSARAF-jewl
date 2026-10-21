@@ -15,6 +15,7 @@ import {
   Receipt,
   Settings,
   ShoppingBag,
+  UserCheck,
   Users,
 } from "lucide-react";
 
@@ -28,6 +29,7 @@ export type NavItem = {
 
 export const APP_NAV: NavItem[] = [
   { href: "/home", label: "Home", icon: Home },
+  { href: "/dashboard/attendance", label: "Attendance", icon: UserCheck },
   { href: "/items", label: "Items", icon: Package },
   { href: "/banking", label: "Banking", icon: Landmark },
   {
@@ -132,6 +134,7 @@ export const REPORTS = [
   { slug: "aged-payables", name: "Aged Payables", group: "Payables" },
   { slug: "sales-by-customer", name: "Sales by Customer", group: "Sales" },
   { slug: "purchases-by-vendor", name: "Purchases by Vendor", group: "Purchases" },
+  { slug: "workers-progress", name: "Workers Progress", group: "Time Tracking" },
 ];
 
 export { LayoutDashboard };

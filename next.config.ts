@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     "bcryptjs",
     "nodemailer",
     "@react-pdf/renderer",
+    "@vladmandic/face-api",
   ],
   turbopack: {
     rules: {

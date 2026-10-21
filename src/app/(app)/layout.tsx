@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { auth } from "@/auth";
+import { AttendancePendingBanner } from "@/components/attendance/AttendancePendingBanner";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { hasModuleAccess } from "@/lib/app-access";
@@ -30,6 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <Sidebar orgName={org?.name ?? "Sarafa Books"} role={session.user.role} initialPath={initialPath} />
       </Suspense>
       <div className="app-content">
+        <AttendancePendingBanner role={session.user.role} />
         <Topbar userName={session.user.name ?? "User"} role={session.user.role} />
         <main className="app-main sb-scroll">{children}</main>
       </div>

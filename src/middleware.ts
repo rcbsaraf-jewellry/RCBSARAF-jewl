@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { authConfig } from "@/auth.config";
 import { canAccessPath, hasModuleAccess, isAppPath } from "@/lib/app-access";
+import { canAccessAttendance } from "@/lib/attendance/roles";
 import { postLoginPath, profileBySlug } from "@/lib/auth-profiles";
 
 const { auth } = NextAuth(authConfig);
@@ -36,6 +37,15 @@ export default auth((req) => {
     const url = req.nextUrl.clone();
     url.pathname = "/portal";
     return NextResponse.redirect(url);
+  }
+
+  if (pathname === "/dashboard/attendance" || pathname.startsWith("/dashboard/attendance/")) {
+    if (!canAccessAttendance(role)) {
+      const url = req.nextUrl.clone();
+      url.pathname = postLoginPath(role);
+      return NextResponse.redirect(url);
+    }
+    return continueWithPath(req);
   }
 
   if (pathname.startsWith("/dashboard/")) {

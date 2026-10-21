@@ -1,0 +1,18 @@
+@media print {
+  header,
+  .billing-no-print {
+    display: none !important;
+  }
+
+  .billing-shell {
+    position: static !important;
+    inset: auto !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  .billing-print-sheet {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
