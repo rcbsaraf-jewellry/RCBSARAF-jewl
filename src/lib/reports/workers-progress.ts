@@ -43,7 +43,7 @@ export type WorkersProgressReport = {
   };
 };
 
-function hours(value: string | number | null | undefined) {
+function hours(value: Parameters<typeof m>[0]) {
   return m(value).toFixed(2);
 }
 

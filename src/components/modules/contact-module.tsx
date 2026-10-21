@@ -68,7 +68,7 @@ export async function ContactModule({
           {rows.map((c) => (
             <Link key={c.id} href={`${base}/${c.id}`} className={`row-link ${selected.contact?.id === c.id ? "is-active" : ""}`}>
               <div className="font-medium">{c.displayName}</div>
-              <div className="text-[11px] text-slate-500">{c.email ?? c.phone ?? c.city}</div>
+              <div className="text-[11px] text-slate-500">{c.email ?? c.phone ?? c.billingCity}</div>
             </Link>
           ))}
         </div>

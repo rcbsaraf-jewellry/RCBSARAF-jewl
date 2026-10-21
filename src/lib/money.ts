@@ -23,7 +23,9 @@ export function money4(value: string | number | Big | null | undefined): Money {
 }
 
 export function add(...values: Array<string | number | Big | null | undefined>): Money {
-  return values.reduce((acc, v) => acc.plus(m(v)), new Big(0)).toFixed(2);
+  let total = new Big(0);
+  for (const value of values) total = total.plus(m(value));
+  return total.toFixed(2);
 }
 
 export function sub(a: string | number | Big, b: string | number | Big): Money {

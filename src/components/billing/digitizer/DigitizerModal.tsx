@@ -54,7 +54,7 @@ export function DigitizerModal({
   }
 
   async function openCamera() {
-    if (typeof navigator !== "undefined" && navigator.mediaDevices?.getUserMedia) {
+    if (typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getUserMedia === "function") {
       setCameraOpen(true);
       return;
     }
