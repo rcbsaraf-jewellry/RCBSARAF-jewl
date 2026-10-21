@@ -98,24 +98,32 @@ export function CameraCaptureModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] grid place-items-center bg-black/70 p-4">
-      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-[#1c1917] text-white shadow-2xl">
+    <div className="fixed inset-0 z-[60] grid h-[100dvh] w-[100dvw] place-items-stretch bg-black md:place-items-center md:bg-black/70 md:p-4">
+      <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#1c1917] text-white md:h-auto md:max-w-lg md:rounded-2xl md:shadow-2xl">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="text-sm font-semibold">Take photo</div>
           <button type="button" aria-label="Close camera" onClick={onClose} className="rounded-md p-1 hover:bg-white/10">
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="relative aspect-[4/3] bg-black">
+        <div className="relative min-h-0 flex-1 bg-black md:aspect-[4/3] md:flex-none">
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={preview} alt="Bill preview" className="h-full w-full object-contain" />
           ) : (
             <video ref={videoRef} playsInline muted className="h-full w-full object-cover" />
           )}
+          {!preview && (
+            <div className="pointer-events-none absolute inset-6 rounded-xl border-2 border-dashed border-[#c9a227]/80">
+              <div className="absolute left-2 top-2 h-6 w-6 border-l-2 border-t-2 border-white" />
+              <div className="absolute right-2 top-2 h-6 w-6 border-r-2 border-t-2 border-white" />
+              <div className="absolute bottom-2 left-2 h-6 w-6 border-b-2 border-l-2 border-white" />
+              <div className="absolute bottom-2 right-2 h-6 w-6 border-b-2 border-r-2 border-white" />
+            </div>
+          )}
         </div>
         {error && <p className="px-4 py-2 text-sm text-rose-300">{error}</p>}
-        <div className="flex items-center justify-between gap-2 px-4 py-3">
+        <div className="flex items-center justify-between gap-2 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {preview ? (
             <>
               <button type="button" onClick={() => { setPreview(null); setBlob(null); }} className="rounded-md px-3 py-2 text-sm">

@@ -32,8 +32,8 @@ export function Model2CashModal({
   }
 
   return (
-    <div className="billing-no-print fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl">
+    <div className="billing-no-print fixed inset-0 z-50 grid place-items-end bg-black/40 md:place-items-center md:p-4">
+      <div className="h-[100dvh] w-full overflow-auto bg-white p-5 shadow-2xl md:h-auto md:max-w-md md:rounded-2xl">
         <div className="flex items-start justify-between">
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8a6d1a]">Model 2</div>
@@ -57,12 +57,12 @@ export function Model2CashModal({
             className="mt-1 w-full rounded-md border border-[#e7e1d8] px-3 py-2 text-lg font-semibold"
           />
         </label>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <button type="button" onClick={() => onCashReceived(summary.payableAmount)} className="rounded-md border border-[#c9a227] bg-[#f8efd4] px-3 py-1.5 text-sm font-semibold">
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+          <button type="button" onClick={() => onCashReceived(summary.payableAmount)} className="min-h-12 touch-manipulation rounded-md border border-[#c9a227] bg-[#f8efd4] px-3 text-sm font-semibold">
             Exact
           </button>
           {DENOMS.map((d) => (
-            <button key={d} type="button" onClick={() => addDenom(d)} className="rounded-md border border-[#e7e1d8] px-3 py-1.5 text-sm">
+            <button key={d} type="button" onClick={() => addDenom(d)} className="min-h-12 touch-manipulation rounded-md border border-[#e7e1d8] px-3 text-sm font-semibold">
               +₹{d}
             </button>
           ))}
@@ -76,9 +76,9 @@ export function Model2CashModal({
           type="button"
           disabled={busy || !summary.tenderValid}
           onClick={onConfirm}
-          className="mt-4 w-full rounded-md bg-[#c9a227] py-2.5 text-sm font-semibold text-[#1c1917] disabled:opacity-50"
+          className="mt-4 min-h-12 w-full touch-manipulation rounded-md bg-[#1f8a5b] py-2.5 text-sm font-semibold text-white disabled:opacity-50"
         >
-          {busy ? "Saving…" : "Complete cash bill  (F9)"}
+          {busy ? "Saving…" : "Complete Cash Sale"}
         </button>
       </div>
     </div>

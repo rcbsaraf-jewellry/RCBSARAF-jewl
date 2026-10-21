@@ -93,8 +93,8 @@ export function SelfieCaptureModal({
           : "border-sky-400";
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+    <div className="fixed inset-0 z-50 grid h-[100dvh] w-[100dvw] place-items-stretch bg-black md:place-items-center md:bg-black/50 md:p-4">
+      <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-white md:h-auto md:max-w-md md:rounded-2xl md:shadow-2xl">
         <div className="flex items-center justify-between px-4 py-3">
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8a6d1a]">Live selfie</div>
@@ -105,17 +105,18 @@ export function SelfieCaptureModal({
           </button>
         </div>
 
-        <div className="relative bg-black">
+        <div className="relative min-h-0 flex-1 bg-black">
           <Webcam
             ref={cam}
             audio={false}
             screenshotFormat="image/jpeg"
             screenshotQuality={0.86}
+            mirrored
             videoConstraints={{ facingMode: "user", width: 720, height: 720 }}
-            className="aspect-square w-full object-cover"
+            className="h-full w-full object-cover md:aspect-square md:h-auto"
           />
-          <div className={`pointer-events-none absolute inset-0 grid place-items-center`}>
-            <div className={`h-[70%] w-[52%] rounded-[50%] border-4 ${ring} shadow-[0_0_0_999px_rgba(0,0,0,.35)]`} />
+          <div className="pointer-events-none absolute inset-0 grid place-items-center">
+            <div className={`h-[58%] w-[68%] max-w-[280px] rounded-full border-4 ${ring} shadow-[0_0_0_999px_rgba(0,0,0,.35)] md:h-[70%] md:w-[52%]`} />
           </div>
           {phase === "success" && (
             <div className="absolute inset-0 grid place-items-center bg-emerald-700/70 text-white">
@@ -147,7 +148,7 @@ export function SelfieCaptureModal({
               type="button"
               disabled={phase === "matching"}
               onClick={() => void submit()}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#c9a227] py-2.5 text-sm font-semibold text-[#1c1917] disabled:opacity-60"
+                  className="inline-flex min-h-12 w-full touch-manipulation items-center justify-center gap-2 rounded-md bg-[#c9a227] py-2.5 text-sm font-semibold text-[#1c1917] disabled:opacity-60"
             >
               <Camera className="h-4 w-4" />
               {phase === "matching" ? "Matching…" : "Capture & Submit Attendance"}

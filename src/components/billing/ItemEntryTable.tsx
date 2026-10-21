@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { calculateJewelryLineItem } from "@/lib/billing/calculator";
+import { TouchKeypad } from "@/components/billing/TouchKeypad";
 import { METAL_KEYS, type JewelryRate, type LineDraft } from "@/lib/billing/types";
 import { formatINR } from "@/lib/money";
 import { Plus, Trash2 } from "lucide-react";
@@ -22,8 +24,82 @@ export function ItemEntryTable({
   onAdd: () => void;
   onRemove: (id: string) => void;
 }) {
+  const [keypad, setKeypad] = useState<{ id: string; field: "grossWeight" | "makingRate" | "stoneCharge" } | null>(null);
+
   return (
-    <div className="overflow-x-auto rounded-xl border border-[#e7e1d8] bg-white">
+    <>
+    <div className="space-y-3 md:hidden">
+      {items.map((item) => {
+        const computed = calculateJewelryLineItem({
+          grossWeight: item.grossWeight,
+          stoneWeight: item.stoneWeight,
+          ratePerGram: rateFor(rates, item.metalType, item.purity),
+          makingMethod: item.makingMethod,
+          makingRate: item.makingRate,
+          stoneCharge: item.stoneCharge,
+          certificationFee: item.certificationFee,
+        });
+        return (
+          <article key={item.id} className="rounded-2xl border border-[#e7e1d8] bg-white p-3">
+            <input
+              value={item.itemName}
+              placeholder="Necklace / bangle"
+              onChange={(e) => onChange(item.id, { itemName: e.target.value })}
+              className="min-h-12 w-full rounded-md border border-[#e7e1d8] bg-[#f4f1ea] px-3"
+            />
+            <div className="mt-2 flex flex-wrap gap-2">
+              {METAL_KEYS.filter((m) => m.metalType === "GOLD").map((metal) => {
+                const selected = item.metalType === metal.metalType && item.purity === metal.purity;
+                return (
+                  <button
+                    key={`${metal.metalType}:${metal.purity}`}
+                    type="button"
+                    onClick={() => onChange(item.id, { metalType: metal.metalType, purity: metal.purity })}
+                    className={`min-h-12 touch-manipulation rounded-full px-3 text-sm font-semibold ${selected ? "bg-[#c9a227] text-[#1c1917]" : "border border-[#e7e1d8] bg-white"}`}
+                  >
+                    {metal.purity}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={() => setKeypad({ id: item.id, field: "grossWeight" })}
+              className="mt-2 flex min-h-12 w-full items-center justify-between rounded-md border border-[#e7e1d8] px-3 text-sm"
+            >
+              <span>Gross weight</span>
+              <span className="font-semibold">{item.grossWeight || "0"} g</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setKeypad({ id: item.id, field: "makingRate" })}
+              className="mt-2 flex min-h-12 w-full items-center justify-between rounded-md border border-[#e7e1d8] px-3 text-sm"
+            >
+              <span>Making</span>
+              <span className="font-semibold">{item.makingRate || "0"}</span>
+            </button>
+            <div className="mt-2 flex items-center justify-between text-sm">
+              <span>Line</span>
+              <span className="font-semibold">{formatINR(computed.lineTotal)}</span>
+            </div>
+            {keypad?.id === item.id && (
+              <TouchKeypad
+                value={item[keypad.field]}
+                onChange={(next) => onChange(item.id, { [keypad.field]: next })}
+                onDone={() => setKeypad(null)}
+              />
+            )}
+            <button type="button" onClick={() => onRemove(item.id)} className="mt-2 inline-flex min-h-12 items-center gap-2 text-sm text-rose-700">
+              <Trash2 className="h-4 w-4" /> Remove
+            </button>
+          </article>
+        );
+      })}
+      <button type="button" onClick={onAdd} className="inline-flex min-h-12 items-center gap-2 text-sm font-semibold text-[#8a6d1a]">
+        <Plus className="h-4 w-4" /> Add jewellery line
+      </button>
+    </div>
+    <div className="hidden overflow-x-auto rounded-xl border border-[#e7e1d8] bg-white md:block">
       <table className="min-w-[1100px] w-full text-left text-sm">
         <thead className="bg-[#f8efd4] text-[11px] uppercase tracking-[0.12em] text-stone-600">
           <tr>
@@ -158,5 +234,6 @@ export function ItemEntryTable({
         <span className="ml-3 text-[11px] text-stone-400">F2</span>
       </div>
     </div>
+    </>
   );
 }

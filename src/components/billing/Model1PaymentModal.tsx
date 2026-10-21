@@ -51,14 +51,14 @@ export function Model1PaymentModal({
   }
 
   return (
-    <div className="billing-no-print fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
-      <div className="w-full max-w-2xl rounded-2xl bg-white p-5 shadow-2xl">
+    <div className="billing-no-print fixed inset-0 z-50 grid place-items-end bg-black/40 md:place-items-center md:p-4">
+      <div className="h-[100dvh] w-full overflow-auto bg-white p-5 shadow-2xl md:h-auto md:max-w-2xl md:rounded-2xl">
         <div className="flex items-start justify-between">
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8a6d1a]">Model 1</div>
             <h3 className="text-lg font-semibold">Collect payment</h3>
           </div>
-          <button type="button" onClick={onClose} className="rounded-md p-1 hover:bg-stone-100">
+          <button type="button" onClick={onClose} className="grid min-h-12 min-w-12 place-items-center rounded-md hover:bg-stone-100">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -84,8 +84,21 @@ export function Model1PaymentModal({
 
         <div className="mt-4 space-y-2">
           {tenders.map((tender) => (
-            <div key={tender.id} className="grid grid-cols-[140px_1fr_1fr_auto] gap-2">
+            <div key={tender.id} className="grid gap-2 rounded-xl border border-[#e7e1d8] p-3 md:grid-cols-[140px_1fr_1fr_auto] md:border-0 md:p-0">
+              <div className="grid grid-cols-2 gap-2 md:hidden">
+                {(["CASH", "UPI", "CARD", "CHEQUE"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => patch(tender.id, { paymentMode: mode, cardKind: mode === "CARD" ? "CREDIT" : undefined })}
+                    className={`min-h-12 touch-manipulation rounded-xl border text-sm font-semibold ${tender.paymentMode === mode ? "border-[#c9a227] bg-[#f8efd4]" : "border-[#e7e1d8] bg-white"}`}
+                  >
+                    {mode === "CHEQUE" ? "Cheque" : mode === "CARD" ? "Card" : mode}
+                  </button>
+                ))}
+              </div>
               <select
+                className="hidden md:block rounded-md border border-[#e7e1d8] px-2 py-2 text-sm"
                 value={tender.paymentMode === "CARD" ? `CARD:${tender.cardKind ?? "CREDIT"}` : tender.paymentMode}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -95,7 +108,6 @@ export function Model1PaymentModal({
                   }
                   patch(tender.id, { paymentMode: value as TenderLine["paymentMode"], cardKind: undefined });
                 }}
-                className="rounded-md border border-[#e7e1d8] px-2 py-2 text-sm"
               >
                 {modes.flatMap((mode) =>
                   mode === "CARD"
@@ -180,7 +192,7 @@ export function Model1PaymentModal({
           type="button"
           disabled={busy || !summary.tenderValid}
           onClick={onConfirm}
-          className="mt-4 w-full rounded-md bg-[#c9a227] py-2.5 text-sm font-semibold text-[#1c1917] disabled:opacity-50"
+          className="mt-4 min-h-12 w-full touch-manipulation rounded-md bg-[#c9a227] py-2.5 text-sm font-semibold text-[#1c1917] disabled:opacity-50"
         >
           {busy ? "Saving…" : "Save GST invoice"}
         </button>

@@ -52,7 +52,7 @@ export function Sidebar({
         <div className="grid h-8 w-8 place-items-center rounded-md bg-[var(--gold)] text-[11px] font-bold tracking-wide text-[#1c2530]">
           RCB
         </div>
-        <div className="min-w-0">
+        <div className="nav-meta min-w-0">
           <div className="truncate text-[13px] font-semibold text-white">Sarafa Books</div>
           <div className="truncate text-[10px] text-[#93a0ae]">
             {orgName}
@@ -69,8 +69,8 @@ export function Sidebar({
           if (!item.children) {
             return (
               <Link key={item.href} href={item.href} className={cn("nav-link", active && "is-active")}>
-                <Icon className="h-4 w-4 opacity-80" />
-                {item.label}
+                <Icon className="h-4 w-4 shrink-0 opacity-80" />
+                <span className="nav-label">{item.label}</span>
               </Link>
             );
           }
@@ -82,9 +82,9 @@ export function Sidebar({
                 onClick={() => setOpen((s) => ({ ...s, [item.label]: !expanded }))}
                 className={cn("nav-link w-[calc(100%-16px)] text-left", active && "text-white")}
               >
-                <Icon className="h-4 w-4 opacity-80" />
-                <span className="flex-1">{item.label}</span>
-                <ChevronDown className={cn("h-3.5 w-3.5 opacity-50 transition", expanded && "rotate-180")} />
+                <Icon className="h-4 w-4 shrink-0 opacity-80" />
+                <span className="nav-label flex-1">{item.label}</span>
+                <ChevronDown className={cn("nav-chevron h-3.5 w-3.5 opacity-50 transition", expanded && "rotate-180")} />
               </button>
               {expanded && (
                 <div className="mb-1 ml-5 border-l border-white/10">
@@ -112,8 +112,8 @@ export function Sidebar({
           const active = pathMatches(pathname, item.href);
           return (
             <Link key={item.href} href={item.href} className={cn("nav-link", active && "is-active")}>
-              <Icon className="h-4 w-4" />
-              {item.label}
+              <Icon className="h-4 w-4 shrink-0" />
+              <span className="nav-label">{item.label}</span>
             </Link>
           );
         })}

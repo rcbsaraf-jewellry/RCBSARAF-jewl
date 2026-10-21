@@ -204,7 +204,7 @@ export function BillingWorkbench({ model }: { model: BillModel }) {
         onChange={(metalType, purity, value) => setDraftRates((d) => ({ ...d, [`${metalType}:${purity}`]: value }))}
         onSave={() => void saveRates()}
       />
-      <div className="mx-auto max-w-6xl px-4 py-5">
+      <div className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <Link href="/dashboard/billing" className="text-xs text-stone-500 hover:text-[#1c1917]">
@@ -231,58 +231,73 @@ export function BillingWorkbench({ model }: { model: BillModel }) {
                 setError(null);
               }}
             />
-            <button type="button" onClick={() => setPayOpen(true)} className="rounded-md bg-[#c9a227] px-4 py-2 text-sm font-semibold text-[#1c1917]">
+            <button type="button" onClick={() => setPayOpen(true)} className="hidden min-h-12 touch-manipulation rounded-md bg-[#c9a227] px-4 py-2 text-sm font-semibold text-[#1c1917] lg:inline-flex lg:items-center">
               {cashOnly ? "Cash out (F9)" : "Collect payment (F9)"}
             </button>
           </div>
         </div>
 
-        <div className="mb-4 grid gap-3 sm:grid-cols-2">
-          <label className="text-sm">
-            Customer name
-            <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="mt-1 w-full rounded-md border border-[#e7e1d8] bg-white px-3 py-2" />
-          </label>
-          <label className="text-sm">
-            Phone
-            <input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="mt-1 w-full rounded-md border border-[#e7e1d8] bg-white px-3 py-2" />
-          </label>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <div className="space-y-4 lg:col-span-7">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="text-sm">
+                Customer name
+                <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="mt-1 min-h-12 w-full rounded-md border border-[#e7e1d8] bg-white px-3 py-2 lg:min-h-0" />
+              </label>
+              <label className="text-sm">
+                Phone
+                <input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="mt-1 min-h-12 w-full rounded-md border border-[#e7e1d8] bg-white px-3 py-2 lg:min-h-0" />
+              </label>
+            </div>
+            <ItemEntryTable
+              items={items}
+              rates={rates}
+              onAdd={() => setItems((rows) => [...rows, emptyLine()])}
+              onRemove={(id) => setItems((rows) => (rows.length === 1 ? rows : rows.filter((row) => row.id !== id)))}
+              onChange={(id, patch) => setItems((rows) => rows.map((row) => (row.id === id ? { ...row, ...patch } : row)))}
+            />
+          </div>
+          <aside className="rounded-xl border border-[#e7e1d8] bg-white p-4 text-sm lg:sticky lg:top-4 lg:col-span-5 lg:self-start">
+            <div className="flex justify-between">
+              <span>Metal value</span>
+              <span>{formatINR(summary.grossAmount)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Making</span>
+              <span>{formatINR(summary.makingChargesTotal)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Stone / cert.</span>
+              <span>{formatINR(summary.stoneChargesTotal)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Taxable</span>
+              <span>{formatINR(summary.taxableAmount)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>GST 3%</span>
+              <span>{formatINR(summary.gstTotal)}</span>
+            </div>
+            <div className="mt-2 flex justify-between border-t border-[#e7e1d8] pt-2 text-base font-semibold">
+              <span>Total</span>
+              <span>{formatINR(summary.finalAmount)}</span>
+            </div>
+          </aside>
         </div>
-
-        <ItemEntryTable
-          items={items}
-          rates={rates}
-          onAdd={() => setItems((rows) => [...rows, emptyLine()])}
-          onRemove={(id) => setItems((rows) => (rows.length === 1 ? rows : rows.filter((row) => row.id !== id)))}
-          onChange={(id, patch) => setItems((rows) => rows.map((row) => (row.id === id ? { ...row, ...patch } : row)))}
-        />
-
-        <aside className="mt-4 ml-auto w-full max-w-sm rounded-xl border border-[#e7e1d8] bg-white p-4 text-sm">
-          <div className="flex justify-between">
-            <span>Metal value</span>
-            <span>{formatINR(summary.grossAmount)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Making</span>
-            <span>{formatINR(summary.makingChargesTotal)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Stone / cert.</span>
-            <span>{formatINR(summary.stoneChargesTotal)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Taxable</span>
-            <span>{formatINR(summary.taxableAmount)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>GST 3%</span>
-            <span>{formatINR(summary.gstTotal)}</span>
-          </div>
-          <div className="mt-2 flex justify-between border-t border-[#e7e1d8] pt-2 text-base font-semibold">
-            <span>Total</span>
-            <span>{formatINR(summary.finalAmount)}</span>
-          </div>
-        </aside>
         {error && <p className="mt-3 text-sm text-rose-700">{error}</p>}
+      </div>
+      <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 flex items-center justify-between gap-3 border-t border-[#e7e1d8] bg-[#fbfaf7] px-3 py-3 md:bottom-0 lg:hidden">
+        <div>
+          <div className="text-[11px] uppercase tracking-[0.14em] text-stone-500">Total</div>
+          <div className="text-lg font-semibold">{formatINR(summary.finalAmount)}</div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setPayOpen(true)}
+          className={`flex min-h-12 touch-manipulation items-center rounded-md px-4 text-sm font-semibold ${cashOnly ? "bg-[#1f8a5b] text-white" : "bg-[#c9a227] text-[#1c1917]"}`}
+        >
+          {cashOnly ? "Complete Cash Sale" : "Collect payment"}
+        </button>
       </div>
 
       {cashOnly ? (

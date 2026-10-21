@@ -69,7 +69,7 @@ export function AttendanceDashboard({
   const canCapture = Boolean(data?.window.canCheckIn && todayStatus !== "PRESENT" && todayStatus !== "LATE");
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
+    <div className="mx-auto max-w-4xl px-4 py-8 pb-28 sm:px-6 sm:py-10 md:pb-10">
       <Link href={workspaceHref} className="text-xs text-stone-500 hover:text-[#1c1917]">
         Back to workspace
       </Link>
@@ -104,7 +104,7 @@ export function AttendanceDashboard({
             type="button"
             disabled={!canCapture}
             onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-2 rounded-md bg-[#c9a227] px-4 py-2 text-sm font-semibold text-[#1c1917] disabled:opacity-50"
+            className="inline-flex min-h-12 touch-manipulation items-center gap-2 rounded-md bg-[#c9a227] px-4 py-2 text-sm font-semibold text-[#1c1917] disabled:opacity-50"
           >
             <Camera className="h-4 w-4" />
             {data?.staff.hasReference ? "Take selfie" : "Register face & check in"}
@@ -112,7 +112,28 @@ export function AttendanceDashboard({
         </div>
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-2xl border border-[#e7e1d8] bg-white">
+      <div className="mt-8 space-y-3 md:hidden">
+        <div className="text-sm font-semibold">Attendance history</div>
+        {(data?.history ?? []).length === 0 && <p className="rounded-2xl border border-[#e7e1d8] bg-white p-6 text-center text-stone-400">No attendance rows yet.</p>}
+        {(data?.history ?? []).map((row) => (
+          <article key={row.id} className="flex items-center gap-3 rounded-2xl border border-[#e7e1d8] bg-white p-3">
+            {row.selfieImageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={row.selfieImageUrl} alt="" className="h-12 w-12 rounded-full object-cover" />
+            ) : (
+              <div className="grid h-12 w-12 place-items-center rounded-full bg-[#f4f1ea] text-xs">—</div>
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold">{row.date}</div>
+              <div className="text-xs text-stone-500">{row.checkInTimestamp ? format(new Date(row.checkInTimestamp), "hh:mm a") : "No check-in"}</div>
+            </div>
+            <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${BADGE[row.verificationStatus]}`}>
+              {row.verificationStatus.replaceAll("_", " ")}
+            </span>
+          </article>
+        ))}
+      </div>
+      <div className="mt-8 hidden overflow-hidden rounded-2xl border border-[#e7e1d8] bg-white md:block">
         <div className="border-b border-[#e7e1d8] px-4 py-3 text-sm font-semibold">Attendance history</div>
         <table className="w-full text-left text-sm">
           <thead className="bg-[#fbfaf7] text-[11px] uppercase tracking-wide text-stone-500">
