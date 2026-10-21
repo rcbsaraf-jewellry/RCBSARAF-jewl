@@ -33,7 +33,9 @@ async function createDb(): Promise<AppDb> {
     return db;
   }
 
-  const dataDir = path.join(process.cwd(), "data", "pglite");
+  const dataDir = process.env.VERCEL
+    ? path.join("/tmp", "sarafa-pglite")
+    : path.join(process.cwd(), "data", "pglite");
   fs.mkdirSync(dataDir, { recursive: true });
   const pg = new PGlite(dataDir);
   await pg.waitReady;

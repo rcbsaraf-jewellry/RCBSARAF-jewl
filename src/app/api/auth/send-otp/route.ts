@@ -41,7 +41,7 @@ export async function POST(req: Request) {
   }
   const inbox = smtpUser();
   if (!inbox) {
-    return NextResponse.json({ ok: false, error: "Set SMTP_USER in .env.local." }, { status: 503 });
+    return NextResponse.json({ ok: false, error: "Set SMTP_USER in Vercel environment variables." }, { status: 503 });
   }
 
   const { ip } = await requestMeta();
@@ -62,9 +62,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "This profile is not available yet." }, { status: 404 });
   }
 
-  let code: string;
+  let issued: { code: string; ticket: string };
   try {
-    code = await issueOtp({ email, role, ip });
+    issued = await issueOtp({ email, role, ip });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not create code.";
     console.error("[send-otp] OTP store failed:", message);
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
   try {
     const mail = otpEmailTemplate({
       name: user.name,
-      code,
+      code: issued.code,
       roleLabel: profileById(role)?.label ?? role,
     });
     await sendMail({ to: inbox, ...mail });
@@ -94,5 +94,6 @@ export async function POST(req: Request) {
     ok: true,
     message: "A verification code was sent to your Gmail inbox.",
     retryAfter: 60,
+    ticket: issued.ticket,
   });
 }

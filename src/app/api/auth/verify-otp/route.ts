@@ -9,6 +9,7 @@ const bodySchema = z.object({
   email: z.string().trim().toLowerCase().email(),
   role: z.enum(AUTH_PROFILE_IDS),
   code: z.string().regex(/^\d{6}$/),
+  ticket: z.string().optional(),
 });
 
 export async function POST(req: Request) {

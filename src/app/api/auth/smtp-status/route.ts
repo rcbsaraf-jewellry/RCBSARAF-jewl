@@ -18,6 +18,6 @@ export async function GET() {
     verified: status.verified,
     host: status.host,
     inbox: inbox ? maskEmail(inbox) : null,
-    error: status.configured ? status.error : "SMTP credentials are not set.",
+    error: status.configured ? status.error : "SMTP credentials are not set in Vercel environment variables.",
   });
 }

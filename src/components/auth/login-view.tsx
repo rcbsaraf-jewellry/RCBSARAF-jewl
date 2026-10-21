@@ -35,6 +35,7 @@ export function LoginView() {
   const [toast, setToast] = useState<string | null>(null);
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otpTicket, setOtpTicket] = useState<string | null>(null);
   const [seconds, setSeconds] = useState(0);
   const [smtp, setSmtp] = useState<{
     configured: boolean;
@@ -82,7 +83,7 @@ export function LoginView() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role: nextRole }),
     });
-    const data = (await res.json()) as { ok?: boolean; error?: string; retryAfter?: number };
+    const data = (await res.json()) as { ok?: boolean; error?: string; retryAfter?: number; ticket?: string };
     sendingFor.current = null;
     setBusy(false);
     if (!res.ok || !data.ok) {
@@ -91,6 +92,7 @@ export function LoginView() {
       return;
     }
     setOtpSent(true);
+    setOtpTicket(data.ticket ?? null);
     setSeconds(data.retryAfter ?? 60);
     setToast(`Code sent for ${AUTH_PROFILES.find((p) => p.id === nextRole)?.label}`);
     requestAnimationFrame(() => otpRefs.current[0]?.focus());
@@ -107,6 +109,7 @@ export function LoginView() {
   function changeRole() {
     sendingFor.current = null;
     setOtpSent(false);
+    setOtpTicket(null);
     setOtp(["", "", "", "", "", ""]);
     setError(null);
   }
@@ -121,7 +124,7 @@ export function LoginView() {
     const res = await fetch("/api/auth/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: profile.demoEmail, role, code: codeDigits }),
+      body: JSON.stringify({ email: profile.demoEmail, role, code: codeDigits, ticket: otpTicket }),
     });
     const data = (await res.json()) as { ok?: boolean; error?: string; grant?: string; redirectTo?: string };
     if (!res.ok || !data.ok || !data.grant) {

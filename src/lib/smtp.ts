@@ -70,7 +70,7 @@ export async function verifySmtp(): Promise<SmtpStatus> {
       configured: false,
       verified: false,
       host: process.env.SMTP_HOST || "smtp.gmail.com",
-      error: "Set SMTP_USER and SMTP_PASS (Gmail App Password) in .env.local.",
+      error: "Set SMTP_USER and SMTP_PASS (Gmail App Password) in Vercel project environment variables, then redeploy.",
     };
     return lastVerify;
   }
