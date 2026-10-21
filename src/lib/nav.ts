@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { hasFullAppAccess, ROLE_ALLOWED_PREFIXES } from "@/lib/app-access";
 import {
   Banknote,
   BookOpen,
@@ -94,6 +95,32 @@ export const QUICK_CREATE = [
   { href: "/sales/customers/new", label: "Customer", icon: Users },
   { href: "/accountant/journals/new", label: "Journal", icon: BookOpen },
 ];
+
+function matchesAllowedPath(href: string, prefixes: readonly string[]) {
+  return prefixes.some((prefix) => href === prefix || href.startsWith(`${prefix}/`));
+}
+
+export function navForRole(role?: string | null): NavItem[] {
+  if (!role || hasFullAppAccess(role)) return APP_NAV;
+  const prefixes = ROLE_ALLOWED_PREFIXES[role];
+  if (!prefixes) return [];
+  return APP_NAV.filter((item) => matchesAllowedPath(item.href, prefixes));
+}
+
+export function bottomNavForRole(role?: string | null): NavItem[] {
+  if (!role || hasFullAppAccess(role)) return BOTTOM_NAV;
+  return [];
+}
+
+export function quickCreateForRole(role?: string | null) {
+  if (!role || hasFullAppAccess(role)) return QUICK_CREATE;
+  const prefixes = ROLE_ALLOWED_PREFIXES[role];
+  if (!prefixes) return [];
+  return [
+    ...(prefixes.includes("/items") ? [{ href: "/items/new", label: "Item", icon: Package }] : []),
+    ...QUICK_CREATE.filter((item) => matchesAllowedPath(item.href, prefixes)),
+  ];
+}
 
 export const REPORTS = [
   { slug: "profit-and-loss", name: "Profit and Loss", group: "Business Overview" },

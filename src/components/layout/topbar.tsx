@@ -4,9 +4,14 @@ import { Bell, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { logoutAction } from "@/server/actions";
-import { QUICK_CREATE } from "@/lib/nav";
+import { ROLES, type Role } from "@/lib/catalog";
+import { canAccessPath } from "@/lib/app-access";
+import { quickCreateForRole } from "@/lib/nav";
 
 export function Topbar({ userName, role }: { userName: string; role: string }) {
+  const roleLabel = role in ROLES ? ROLES[role as Role].label : role.replaceAll("_", " ");
+  const createItems = quickCreateForRole(role);
+  const canOpenSettings = canAccessPath(role, "/settings");
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
@@ -33,13 +38,15 @@ export function Topbar({ userName, role }: { userName: string; role: string }) {
       </div>
       <div className="flex items-center gap-2">
         <div className="relative">
+          {createItems.length > 0 && (
           <button type="button" onClick={() => { setOpen((v) => !v); setMenu(false); }} className="sb-btn sb-btn-gold">
             <Plus className="h-3.5 w-3.5" />
             New
           </button>
-          {open && (
+          )}
+          {open && createItems.length > 0 && (
             <div className="absolute right-0 z-40 mt-1 w-56 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-xl">
-              {QUICK_CREATE.map((item) => {
+              {createItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
@@ -70,14 +77,16 @@ export function Topbar({ userName, role }: { userName: string; role: string }) {
             </div>
             <div className="hidden text-left sm:block">
               <div className="text-[12px] font-medium leading-tight">{userName}</div>
-              <div className="text-[10px] capitalize text-slate-500">{role}</div>
+              <div className="text-[10px] text-slate-500">{roleLabel}</div>
             </div>
           </button>
           {menu && (
             <div className="absolute right-0 z-40 mt-1 w-44 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-xl">
-              <Link href="/settings" onClick={() => setMenu(false)} className="block px-3 py-2 text-[12.5px] hover:bg-slate-50">
-                Settings
-              </Link>
+              {canOpenSettings && (
+                <Link href="/settings" onClick={() => setMenu(false)} className="block px-3 py-2 text-[12.5px] hover:bg-slate-50">
+                  Settings
+                </Link>
+              )}
               <form action={logoutAction}>
                 <button type="submit" className="block w-full px-3 py-2 text-left text-[12.5px] hover:bg-slate-50">
                   Sign out

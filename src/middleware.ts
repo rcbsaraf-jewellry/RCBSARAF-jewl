@@ -1,9 +1,18 @@
 import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { authConfig } from "@/auth.config";
+import { canAccessPath, hasModuleAccess, isAppPath } from "@/lib/app-access";
+import { postLoginPath, profileBySlug } from "@/lib/auth-profiles";
 
 const { auth } = NextAuth(authConfig);
 const PUBLIC = ["/login", "/api/auth"];
+
+function continueWithPath(req: NextRequest) {
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", req.nextUrl.pathname);
+  return NextResponse.next({ request: { headers: requestHeaders } });
+}
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
@@ -19,7 +28,7 @@ export default auth((req) => {
 
   if (req.auth && pathname === "/login") {
     const url = req.nextUrl.clone();
-    url.pathname = role === "portal" ? "/portal" : "/home";
+    url.pathname = postLoginPath(role);
     return NextResponse.redirect(url);
   }
 
@@ -29,7 +38,28 @@ export default auth((req) => {
     return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  if (pathname.startsWith("/dashboard/")) {
+    if (hasModuleAccess(role)) {
+      const url = req.nextUrl.clone();
+      url.pathname = postLoginPath(role);
+      return NextResponse.redirect(url);
+    }
+    const slug = pathname.split("/")[2] ?? "";
+    const profile = profileBySlug(slug);
+    if (!profile || role !== profile.id) {
+      const url = req.nextUrl.clone();
+      url.pathname = postLoginPath(role);
+      return NextResponse.redirect(url);
+    }
+  }
+
+  if (role && isAppPath(pathname) && !canAccessPath(role, pathname) && role !== "portal") {
+    const url = req.nextUrl.clone();
+    url.pathname = postLoginPath(role);
+    return NextResponse.redirect(url);
+  }
+
+  return continueWithPath(req);
 });
 
 export const config = {

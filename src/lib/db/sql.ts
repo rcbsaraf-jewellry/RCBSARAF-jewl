@@ -333,4 +333,57 @@ CREATE TABLE IF NOT EXISTS audit_log (
   detail text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS otp_challenges (
+  id text PRIMARY KEY,
+  email text NOT NULL,
+  role text NOT NULL,
+  code_hash text NOT NULL,
+  expires_at timestamptz NOT NULL,
+  attempts integer NOT NULL DEFAULT 0,
+  consumed_at timestamptz,
+  request_ip text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS otp_email_role_idx ON otp_challenges (email, role);
+CREATE TABLE IF NOT EXISTS auth_grants (
+  id text PRIMARY KEY,
+  user_id text NOT NULL REFERENCES users(id),
+  role text NOT NULL,
+  expires_at timestamptz NOT NULL,
+  consumed_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS login_fingerprints (
+  user_id text PRIMARY KEY REFERENCES users(id),
+  fingerprint text NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+`;
+
+export const AUTH_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS otp_challenges (
+  id text PRIMARY KEY,
+  email text NOT NULL,
+  role text NOT NULL,
+  code_hash text NOT NULL,
+  expires_at timestamptz NOT NULL,
+  attempts integer NOT NULL DEFAULT 0,
+  consumed_at timestamptz,
+  request_ip text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS otp_email_role_idx ON otp_challenges (email, role);
+CREATE TABLE IF NOT EXISTS auth_grants (
+  id text PRIMARY KEY,
+  user_id text NOT NULL REFERENCES users(id),
+  role text NOT NULL,
+  expires_at timestamptz NOT NULL,
+  consumed_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS login_fingerprints (
+  user_id text PRIMARY KEY REFERENCES users(id),
+  fingerprint text NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
 `;

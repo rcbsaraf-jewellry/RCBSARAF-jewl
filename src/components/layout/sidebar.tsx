@@ -3,21 +3,48 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
-import { APP_NAV, BOTTOM_NAV } from "@/lib/nav";
+import { ROLES, type Role } from "@/lib/catalog";
+import { bottomNavForRole, navForRole, type NavItem } from "@/lib/nav";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-export function Sidebar({ orgName }: { orgName: string }) {
-  const pathname = usePathname();
-  const [open, setOpen] = useState<Record<string, boolean>>({});
+function pathMatches(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function openFromPath(pathname: string, items: NavItem[]) {
+  const next: Record<string, boolean> = {};
+  for (const item of items) {
+    if (item.children?.some((child) => pathMatches(pathname, child.href))) {
+      next[item.label] = true;
+    }
+  }
+  return next;
+}
+
+export function Sidebar({
+  orgName,
+  role,
+  initialPath,
+}: {
+  orgName: string;
+  role?: string;
+  initialPath: string;
+}) {
+  const roleLabel = role && role in ROLES ? ROLES[role as Role].label : null;
+  const clientPath = usePathname();
+  const [pathname, setPathname] = useState(initialPath);
+  const nav = useMemo(() => navForRole(role), [role]);
+  const bottomNav = useMemo(() => bottomNavForRole(role), [role]);
+  const [open, setOpen] = useState(() => openFromPath(initialPath, navForRole(role)));
 
   useEffect(() => {
-    const next: Record<string, boolean> = {};
-    for (const item of APP_NAV) {
-      if (item.children?.some((c) => pathname.startsWith(c.href))) next[item.label] = true;
-    }
-    setOpen((prev) => ({ ...prev, ...next }));
-  }, [pathname]);
+    if (clientPath && clientPath !== pathname) setPathname(clientPath);
+  }, [clientPath, pathname]);
+
+  useEffect(() => {
+    setOpen((prev) => ({ ...prev, ...openFromPath(pathname, nav) }));
+  }, [pathname, nav]);
 
   return (
     <aside className="app-sidebar">
@@ -27,15 +54,18 @@ export function Sidebar({ orgName }: { orgName: string }) {
         </div>
         <div className="min-w-0">
           <div className="truncate text-[13px] font-semibold text-white">Sarafa Books</div>
-          <div className="truncate text-[10px] text-[#93a0ae]">{orgName}</div>
+          <div className="truncate text-[10px] text-[#93a0ae]">
+            {orgName}
+            {roleLabel ? ` · ${roleLabel}` : ""}
+          </div>
         </div>
       </div>
       <nav className="sb-scroll flex-1 overflow-y-auto py-2">
-        {APP_NAV.map((item) => {
+        {nav.map((item) => {
           const Icon = item.icon;
           const active = item.children
-            ? item.children.some((c) => pathname.startsWith(c.href))
-            : pathname === item.href || pathname.startsWith(`${item.href}/`);
+            ? item.children.some((child) => pathMatches(pathname, child.href))
+            : pathMatches(pathname, item.href);
           if (!item.children) {
             return (
               <Link key={item.href} href={item.href} className={cn("nav-link", active && "is-active")}>
@@ -59,7 +89,7 @@ export function Sidebar({ orgName }: { orgName: string }) {
               {expanded && (
                 <div className="mb-1 ml-5 border-l border-white/10">
                   {item.children.map((child) => {
-                    const childActive = pathname === child.href || pathname.startsWith(`${child.href}/`);
+                    const childActive = pathMatches(pathname, child.href);
                     return (
                       <Link
                         key={child.href}
@@ -77,9 +107,9 @@ export function Sidebar({ orgName }: { orgName: string }) {
         })}
       </nav>
       <div className="border-t border-white/10 py-2">
-        {BOTTOM_NAV.map((item) => {
+        {bottomNav.map((item) => {
           const Icon = item.icon;
-          const active = pathname.startsWith(item.href);
+          const active = pathMatches(pathname, item.href);
           return (
             <Link key={item.href} href={item.href} className={cn("nav-link", active && "is-active")}>
               <Icon className="h-4 w-4" />

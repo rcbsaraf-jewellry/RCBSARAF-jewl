@@ -32,7 +32,7 @@ export default async function SettingsPage() {
             </div>
           ))}
           <p className="mt-3 text-[12px] text-slate-500">
-            Roles: Admin, Accountant, Salesperson, Purchases, Auditor, Customer Portal. Ledger posting is restricted to Admin and Accountant in production RBAC.
+            Roles: Business Owner (full ERP), Admin, Accountant, Sales, Billing, Store Manager, Purchases, Auditor, Customer Portal.
           </p>
         </section>
         <section className="sb-card p-4 text-[13px]">

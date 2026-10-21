@@ -5,7 +5,8 @@ import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
 import { PGlite } from "@electric-sql/pglite";
 import postgres from "postgres";
 import * as schema from "./schema";
-import { SCHEMA_SQL } from "./sql";
+import { AUTH_SCHEMA_SQL, SCHEMA_SQL } from "./sql";
+import { ensureProfileUsers } from "./profile-users";
 import { seedIfEmpty } from "./seed";
 
 type AppDb =
@@ -22,10 +23,13 @@ async function createDb(): Promise<AppDb> {
   if (url) {
     const sql = postgres(url, { max: 4 });
     const db = drizzlePg(sql, { schema });
-    for (const stmt of SCHEMA_SQL.split(";").map((s) => s.trim()).filter(Boolean)) {
+    for (const stmt of [...SCHEMA_SQL.split(";"), ...AUTH_SCHEMA_SQL.split(";")]
+      .map((s) => s.trim())
+      .filter(Boolean)) {
       await sql.unsafe(stmt);
     }
     await seedIfEmpty(db);
+    await ensureProfileUsers(db);
     return db;
   }
 
@@ -35,7 +39,9 @@ async function createDb(): Promise<AppDb> {
   await pg.waitReady;
   const db = drizzlePglite(pg, { schema });
   await pg.exec(SCHEMA_SQL);
+  await pg.exec(AUTH_SCHEMA_SQL);
   await seedIfEmpty(db);
+  await ensureProfileUsers(db);
   return db;
 }
 

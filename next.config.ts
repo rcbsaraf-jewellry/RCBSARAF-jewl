@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     "@electric-sql/pglite",
     "postgres",
     "bcryptjs",
+    "nodemailer",
     "@react-pdf/renderer",
   ],
   turbopack: {

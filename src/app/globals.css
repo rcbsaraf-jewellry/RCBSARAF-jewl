@@ -403,6 +403,26 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: #94a3b8;
 }
 
+.auth-lux {
+  background: #f4f1ea;
+  color: #1c1917;
+  min-height: 100%;
+}
+.auth-lux .login-card {
+  background: #fffcf7;
+  border: 1px solid #ddd6cc;
+  box-shadow: 0 18px 50px rgba(28, 25, 23, 0.08);
+}
+.auth-lux .mode-on {
+  background: #1c1917;
+  color: #fbfaf7;
+}
+.auth-lux .mode-off { color: #6b635b; }
+.auth-lux .gold-btn {
+  background: #c9a227;
+  color: #1c1917;
+}
+
 @media (max-width: 1100px) {
   .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

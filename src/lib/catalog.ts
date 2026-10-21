@@ -214,6 +214,18 @@ export const ROLES = {
     label: "Salesperson",
     permissions: ["sales", "customers", "items.read"],
   },
+  billing: {
+    label: "Billing",
+    permissions: ["sales", "invoices", "payments", "customers"],
+  },
+  store_manager: {
+    label: "Store Manager",
+    permissions: ["inventory", "items", "purchases.read"],
+  },
+  business_owner: {
+    label: "Business Owner",
+    permissions: ["*"],
+  },
   purchases: {
     label: "Purchases",
     permissions: ["purchases", "vendors", "expenses", "items.read"],

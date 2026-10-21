@@ -48,6 +48,37 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex("users_email_idx").on(t.email)]);
 
+export const otpChallenges = pgTable("otp_challenges", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull(),
+  role: text("role").notNull(),
+  codeHash: text("code_hash").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  attempts: integer("attempts").notNull().default(0),
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  requestIp: text("request_ip"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("otp_email_role_idx").on(t.email, t.role)]);
+
+export const authGrants = pgTable("auth_grants", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  role: text("role").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const loginFingerprints = pgTable("login_fingerprints", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => users.id),
+  fingerprint: text("fingerprint").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const accounts = pgTable("accounts", {
   id: text("id").primaryKey(),
   organizationId: text("organization_id")

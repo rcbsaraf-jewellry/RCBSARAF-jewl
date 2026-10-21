@@ -3,7 +3,7 @@ import type { Role } from "@/lib/catalog";
 
 export const authConfig = {
   trustHost: true,
-  secret: process.env.AUTH_SECRET ?? "sarafa-dev-secret-change-me-32b",
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? "sarafa-dev-secret-change-me-32b",
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   providers: [],
