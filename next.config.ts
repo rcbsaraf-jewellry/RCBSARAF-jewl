@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  serverExternalPackages: [
+    "@electric-sql/pglite",
+    "postgres",
+    "bcryptjs",
+    "@react-pdf/renderer",
+  ],
   turbopack: {
     rules: {
       "*.css": {

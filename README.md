@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sarafa Books
 
-## Getting Started
+Independent double-entry accounting application for jewellery and trading businesses. The information architecture (Home, Items, Banking, Sales, Purchases, Time Tracking, Accountant, Reports, Documents, Settings, Customer Portal) follows public Zoho Books help documentation. This product is **not affiliated with Zoho**. Branding, copy, and visual design are original.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 App Router, React 19, TypeScript, Tailwind CSS
+- TanStack Query, Zustand, Zod, Big.js, date-fns, Lucide, Framer Motion
+- Drizzle ORM with embedded PostgreSQL ([PGlite](https://pglite.dev)) or Docker Postgres
+- Auth.js (NextAuth v5) credentials + RBAC roles
+- `@react-pdf/renderer` for invoice PDFs
+
+## Run
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Demo users (password `Sarafa@123`):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `admin@rcbsarafa.com` — Admin
+- `accountant@rcbsarafa.com` — Accountant
+- `sales@rcbsarafa.com` — Sales
+- `portal@nishabridal.com` — Customer portal (Nisha Bridal House)
 
-## Learn More
+The first request creates `./data/pglite` and seeds the ledger (chart of accounts, GST rates, customers, vendors, items, invoices, bills, bank feeds, journals).
 
-To learn more about Next.js, take a look at the following resources:
+### Optional Docker PostgreSQL
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+docker compose up -d
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Set `DATABASE_URL=postgres://sarafa:sarafa@localhost:5432/sarafa` in `.env.local`.
 
-## Deploy on Vercel
+## Accounting rules
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Posting a non-draft invoice, bill, credit note, vendor credit, or expense writes a **balanced** journal (`sum(debits) === sum(credits)`). Inventory items decrement/increment stock and post COGS. Payments allocate against open documents and move AR/AP.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Observed source (REA / docs)
+
+Public help used for module inventory and form fields:
+
+- https://www.zoho.com/us/books/help/getting-started/welcome.html
+- https://www.zoho.com/us/books/help/getting-started/zoho-books.html
+- https://www.zoho.com/us/books/help/invoice/
+- https://www.zoho.com/us/books/help/accountant/chart-of-accounts.html
+- https://www.zoho.com/us/books/help/banking/
+
+The live `books.zoho.com` application is login-walled; reconstruction is based on documented workflows, not copied assets.
